@@ -54,7 +54,9 @@
     "kartotherian-layermixer": "git+https://github.com/kartotherian/kartotherian-layermixer.git",
     "kartotherian-overzoom": "git+https://github.com/kartotherian/kartotherian-overzoom.git",
     "osm-bright-source": "git+https://github.com/kartotherian/osm-bright.tm2source.git",
-    "osm-bright-style": "git+https://github.com/kartotherian/osm-bright.tm2.git"
+    "osm-bright-style": "git+https://github.com/kartotherian/osm-bright.tm2.git",
+
+    "leaflet": "~0.7.7"
   },
   "devDependencies": {
     "extend": "^3.0.0",

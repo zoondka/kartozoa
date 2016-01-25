@@ -211,10 +211,13 @@ function init(opts) {
     router.get('/:src(' + core.Sources.sourceIdReStr + ')/:info(pbfinfo).json', requestHandler);
     router.get('/:src(' + core.Sources.sourceIdReStr + ')/:info(info).json', requestHandler);
 
+    // get preview map
+    router.get('/preview', function(req, res) { res.sendFile('preview.html', {root: 'static'}); });
+
     // Add before static to prevent disk IO on each tile request
     app.use('/', router);
     app.use('/', express.static(pathLib.resolve(__dirname, '../static'), staticOpts));
-    //app.use('/leaflet', express.static(pathLib.dirname(require.resolve('leaflet')), staticOpts));
+    app.use('/leaflet', express.static(pathLib.dirname(require.resolve('leaflet')), staticOpts));
 
     metrics.increment('init');
 };
