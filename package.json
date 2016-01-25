@@ -1,0 +1,73 @@
+{
+  "name": "kartotherian",
+  "version": "0.0.3",
+  "description": "Renders map tiles",
+  "main": "./app.js",
+  "scripts": {
+    "start": "service-runner",
+    "test": "mocha",
+    "docker-start": "service-runner docker-start",
+    "docker-test": "service-runner docker-test",
+    "coverage": "istanbul cover _mocha -- -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kartotherian/kartotherian.git"
+  },
+  "keywords": [
+    "REST",
+    "API",
+    "service template",
+    "MediaWiki"
+  ],
+  "author": "Yuri Astrakhan <yurik@wikimedia.org>",
+  "contributors": [
+    "Max Semenik <msemenik@wikimedia.org>"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://phabricator.wikimedia.org/tag/maps/"
+  },
+  "homepage": "https://github.com/kartotherian/kartotherian",
+  "dependencies": {
+    "bluebird": "~2.8.2",
+    "body-parser": "^1.13.2",
+    "bunyan": "^1.4.0",
+    "cassandra-uuid": "^0.0.2",
+    "compression": "^1.5.1",
+    "domino": "^1.0.18",
+    "express": "^4.13.1",
+    "js-yaml": "^3.3.1",
+    "preq": "^0.4.4",
+    "service-runner": "^0.2.1",
+
+    "mapnik": "~3.4.0",
+    "tilelive": "~5.8.2",
+    "tilelive-bridge": "~1.4.0",
+    "tilelive-vector": "~3.3.0",
+
+    "kartotherian-core": "git+https://github.com/kartotherian/kartotherian-core.git",
+    "kartotherian-server": "git+https://github.com/kartotherian/kartotherian-server.git",
+    "kartotherian-autogen": "git+https://github.com/kartotherian/kartotherian-autogen.git",
+    "kartotherian-demultiplexer": "git+https://github.com/kartotherian/kartotherian-demultiplexer.git",
+    "kartotherian-cassandra": "git+https://github.com/kartotherian/kartotherian-cassandra.git",
+    "kartotherian-layermixer": "git+https://github.com/kartotherian/kartotherian-layermixer.git",
+    "kartotherian-overzoom": "git+https://github.com/kartotherian/kartotherian-overzoom.git",
+    "osm-bright-source": "git+https://github.com/kartotherian/osm-bright.tm2source.git",
+    "osm-bright-style": "git+https://github.com/kartotherian/osm-bright.tm2.git"
+  },
+  "devDependencies": {
+    "extend": "^3.0.0",
+    "istanbul": "^0.3.17",
+    "mocha": "^2.2.5",
+    "mocha-jshint": "^2.2.3",
+    "mocha-lcov-reporter": "^0.0.2",
+    "swagger-router": "^0.1.1"
+  },
+  "deploy": {
+    "target": "debian",
+    "dependencies": {
+      "_all": []
+    }
+  }
+}
