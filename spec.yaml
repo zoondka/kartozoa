@@ -1,17 +1,14 @@
 swagger: '2.0'
 info:
-  version: 0.2.1
-  title: WMF Node.JS Service Template
-  description: A template for creating Node.JS services
-  termsOfService: https://wikimediafoundation.org/wiki/Terms_of_Use
+  version: 0.0.1
+  title: Kartozoa
+  description: Simple vector tile server based on Kartotherian
   contact:
-    name: the Wikimedia Services team
-    url: http://mediawiki.org/wiki/Services
+    name: Lucas Leblow
+    email: leblowl@gmail.com
   license:
     name: Apache2
     url: http://www.apache.org/licenses/LICENSE-2.0
-x-default-params:
-  domain: en.wikipedia.org
 paths:
   # from routes/root.js
   /robots.txt:

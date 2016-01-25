@@ -1,15 +1,13 @@
 'use strict';
 
+var core = require('kartotherian-core');
 var util = require('util');
 var pathLib = require('path');
 var BBPromise = require('bluebird');
 var _ = require('underscore');
 var express = require('express');
 
-var abaculus = BBPromise.promisify(require('abaculus'));
-var makizushi = BBPromise.promisify(require('makizushi'));
-
-var core, Err;
+var Err;
 var app, sources;
 var metrics;
 
@@ -63,7 +61,7 @@ function filterJson(query, data) {
 }
 
 /**
- * Web server (express) route handler to get requested tile, snapshot image, or info
+ * Web server (express) route handler to get requested tile or info
  * @param req request object
  * @param res response object
  * @param next will be called if request is not handled
@@ -79,6 +77,7 @@ function requestHandler(req, res, next) {
         if (!sources) {
             throw new Err('The service has not started yet');
         }
+
         srcId = req.params.src;
         source = sources.getSourceById(srcId, true);
         if (!source) {
@@ -87,6 +86,7 @@ function requestHandler(req, res, next) {
         if (!source.public) {
             throw new Err('Source is not public').metrics('err.req.source');
         }
+
         var isInfoRequest = false;
         if (req.params.info) {
             if (req.params.info === 'pbfinfo' || req.params.info === 'info') {
@@ -142,50 +142,18 @@ function requestHandler(req, res, next) {
             scale = parseFloat(scale);
         }
 
-        isStatic = req.params.w !== undefined || req.params.h !== undefined;
-
-        if (isStatic) {
-            if (!source.static) {
-                throw new Err('Static snapshot images are not enabled for this source').metrics('err.req.static');
-            }
-            if (format !== 'png' && format !== 'jpeg') {
-                throw new Err('Format %s is not allowed for static images', format).metrics('err.req.stformat');
-            }
-            var lat = core.strToFloat(req.params.lat);
-            var lon = core.strToFloat(req.params.lon);
-            var w = core.strToInt(req.params.w);
-            var h = core.strToInt(req.params.h);
-            if (typeof lat !== 'number' || typeof lon !== 'number') {
-                throw new Err('The lat and lon coordinates must be numeric for static images').metrics('err.req.stcoords');
-            }
-            if (!core.isInteger(w) || !core.isInteger(h)) {
-                throw new Err('The width and height params must be integers for static images').metrics('err.req.stsize');
-            }
-            if (w > source.maxwidth || h > source.maxheight) {
-                throw new Err('Requested image is too big').metrics('err.req.stsizebig');
-            }
-            var params = {
-                zoom: z,
-                scale: scale,
-                center: {x: lon, y: lat, w: w, h: h},
-                format: format,
-                getTile: handler.getTile.bind(handler)
-            };
-            return abaculus(params);
-        } else {
-            x = core.strToInt(req.params.x);
-            y = core.strToInt(req.params.y);
-            if (!core.isValidCoordinate(x, z) || !core.isValidCoordinate(y, z)) {
-                throw new Err('x,y coordinates are not valid, or not allowed for this zoom').metrics('err.req.coords');
-            }
-            if (format !== 'pbf') {
-                opts = {format: format};
-                if (scale) {
-                    opts.scale = scale;
-                }
-            }
-            return core.getTitleWithParamsAsync(handler, z, x, y, opts);
+        x = core.strToInt(req.params.x);
+        y = core.strToInt(req.params.y);
+        if (!core.isValidCoordinate(x, z) || !core.isValidCoordinate(y, z)) {
+            throw new Err('x,y coordinates are not valid, or not allowed for this zoom').metrics('err.req.coords');
         }
+        if (format !== 'pbf') {
+          opts = {format: format};
+          if (scale) {
+              opts.scale = scale;
+          }
+        }
+        return core.getTitleWithParamsAsync(handler, z, x, y, opts);
     }).spread(function (data, dataHeaders) {
         if (app.conf.defaultHeaders) res.set(app.conf.defaultHeaders);
         if (source.defaultHeaders) res.set(source.defaultHeaders);
@@ -215,57 +183,7 @@ function requestHandler(req, res, next) {
     }).catch(next);
 }
 
-/**
- * Web server (express) route handler to get a marker icon
- * @param req request object
- * @param res response object
- * @param next will be called if request is not handled
- */
-function markerHandler(req, res, next) {
-
-    var start = Date.now(),
-        params = req.params,
-        metric = ['marker'];
-
-    return BBPromise.try(function () {
-
-        metric.push(params.base);
-        metric.push(params.size);
-        metric.push(params.symbol);
-
-        if (params.color.length !== 3 && params.color.length !== 6) {
-            throw new Err('Bad color').metrics('err.marker.color');
-        }
-        metric.push(params.color);
-
-        var isRetina;
-        if (params.scale === undefined) {
-            isRetina = false;
-        } else if (params.scale === '2') {
-            metric.push(params.scale);
-            isRetina = true;
-        } else {
-            throw new Err('Only retina @2x scaling is allowed for marks').metrics('err.marker.scale');
-        }
-
-        return makizushi({
-            base: params.base, // "pin"
-            size: params.size, // s|m|l
-            symbol: params.symbol, // digit, letter, or maki symol name - https://www.mapbox.com/maki/
-            tint: params.color, // in hex - "abc" or "aabbcc"
-            retina: isRetina // true|false
-        });
-    }).then(function (data) {
-        if (app.conf.defaultHeaders) res.set(app.conf.defaultHeaders);
-        if (app.conf.overrideHeaders) res.set(app.conf.overrideHeaders);
-        res.type('png').send(data);
-        metrics.endTiming(metric.join('.'), start);
-    }).catch(function(err) {
-        return reportRequestError(err, res);
-    }).catch(next);
-}
-
-module.exports.init = function(opts) {
+function init(opts) {
 
     core = opts.core;
     Err = core.Err;
@@ -285,15 +203,6 @@ module.exports.init = function(opts) {
 
     var router = express.Router();
 
-    // get static image
-    router.get('/img/:src(' + core.Sources.sourceIdReStr + '),:z(\\d+),:lat([-\\d\\.]+),:lon([-\\d\\.]+),:w(\\d+)x:h(\\d+).:format([\\w]+)', requestHandler);
-    router.get('/img/:src(' + core.Sources.sourceIdReStr + '),:z(\\d+),:lat([-\\d\\.]+),:lon([-\\d\\.]+),:w(\\d+)x:h(\\d+)@:scale([\\.\\d]+)x.:format([\\w]+)', requestHandler);
-
-    // marker icon generator  (base, size, symbol, color, scale)
-    // /v4/marker/pin-m-cafe+7e7e7e@2x.png -- the format matches that of mapbox to simplify their library usage
-    router.get('/v4/marker/:base([\\w]+)-:size([sml])-:symbol([-\\w]+)\\+:color([a-f0-9]+).png', markerHandler);
-    router.get('/v4/marker/:base([\\w]+)-:size([sml])-:symbol([-\\w]+)\\+:color([a-f0-9]+)@:scale([\\.\\d]+)x.png', markerHandler);
-
     // get tile
     router.get('/:src(' + core.Sources.sourceIdReStr + ')/:z(\\d+)/:x(\\d+)/:y(\\d+).:format([\\w]+)', requestHandler);
     router.get('/:src(' + core.Sources.sourceIdReStr + ')/:z(\\d+)/:x(\\d+)/:y(\\d+)@:scale([\\.\\d]+)x.:format([\\w]+)', requestHandler);
@@ -305,7 +214,35 @@ module.exports.init = function(opts) {
     // Add before static to prevent disk IO on each tile request
     app.use('/', router);
     app.use('/', express.static(pathLib.resolve(__dirname, '../static'), staticOpts));
-    app.use('/leaflet', express.static(pathLib.dirname(require.resolve('leaflet')), staticOpts));
+    //app.use('/leaflet', express.static(pathLib.dirname(require.resolve('leaflet')), staticOpts));
 
     metrics.increment('init');
+};
+
+module.exports = function(app) {
+
+    return BBPromise.try(function () {
+        core.init(app.logger, pathLib.resolve(__dirname, '..'), function (module) {
+            return require.resolve(module);
+        }, require('tilelive'), require('mapnik'));
+
+        core.registerSourceLibs(
+            require('tilelive-bridge'),
+            require('tilelive-vector'),
+            require('kartotherian-autogen'),
+            require('kartotherian-demultiplexer'),
+            require('kartotherian-overzoom'),
+            require('kartotherian-cassandra'),
+            require('kartotherian-layermixer')
+        );
+
+        var sources = new core.Sources(app);
+        return sources.init(app.conf.variables, app.conf.sources);
+    }).then(function (sources) {
+        return init({
+            core: core,
+            app: app,
+            sources: sources
+        });
+    });
 };

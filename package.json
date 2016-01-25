@@ -1,7 +1,7 @@
 {
-  "name": "kartotherian",
-  "version": "0.0.3",
-  "description": "Renders map tiles",
+  "name": "Kartozoa",
+  "version": "0.0.1",
+  "description": "Simple vector tile server based on Kartotherian",
   "main": "./app.js",
   "scripts": {
     "start": "service-runner",
@@ -12,34 +12,35 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kartotherian/kartotherian.git"
+    "url": "git://github.com/zoondka/kartozoa.git"
   },
   "keywords": [
     "REST",
     "API",
-    "service template",
-    "MediaWiki"
+    "vector",
+    "tile server"
   ],
-  "author": "Yuri Astrakhan <yurik@wikimedia.org>",
+  "author": "Lucas Leblow <leblowl@gmail.com>",
   "contributors": [
+    "Yuri Astrakhan <yurik@wikimedia.org>",
     "Max Semenik <msemenik@wikimedia.org>"
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://phabricator.wikimedia.org/tag/maps/"
+    "url": "https://github.com/zoondka/kartozoa/issues"
   },
-  "homepage": "https://github.com/kartotherian/kartotherian",
   "dependencies": {
-    "bluebird": "~2.8.2",
-    "body-parser": "^1.13.2",
-    "bunyan": "^1.4.0",
+    "bluebird": "^3.1.1",
+    "body-parser": "^1.14.2",
+    "bunyan": "^1.5.1",
     "cassandra-uuid": "^0.0.2",
-    "compression": "^1.5.1",
-    "domino": "^1.0.18",
-    "express": "^4.13.1",
-    "js-yaml": "^3.3.1",
-    "preq": "^0.4.4",
-    "service-runner": "^0.2.1",
+    "compression": "^1.6.1",
+    "domino": "^1.0.21",
+    "express": "^4.13.3",
+    "underscore": "^1.8.3",
+    "js-yaml": "^3.5.2",
+    "preq": "^0.4.8",
+    "service-runner": "^0.3.8",
 
     "mapnik": "~3.4.0",
     "tilelive": "~5.8.2",
@@ -58,11 +59,11 @@
   },
   "devDependencies": {
     "extend": "^3.0.0",
-    "istanbul": "^0.3.17",
-    "mocha": "^2.2.5",
-    "mocha-jshint": "^2.2.3",
-    "mocha-lcov-reporter": "^0.0.2",
-    "swagger-router": "^0.1.1"
+    "istanbul": "^0.4.2",
+    "mocha": "^2.3.4",
+    "mocha-jshint": "^2.2.6",
+    "mocha-lcov-reporter": "^1.0.0",
+    "swagger-router": "^0.3.4"
   },
   "deploy": {
     "target": "debian",
