@@ -35,6 +35,6 @@ var hash = new L.Hash(map);
 // Add a map layer
 L.tileLayer('/' + style + '/{z}/{x}/{y}' + scalex + '.png', {
     maxZoom: 18,
-    attribution: 'Wikimedia maps beta | Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
     id: 'wikipedia-map-01'
 }).addTo(map);
