@@ -1,5 +1,6 @@
 'use strict';
 
+
 var util = require('util');
 var sUtil = require('../lib/util');
 var pathLib = require('path');
@@ -164,6 +165,7 @@ function requestHandler(req, res, next) {
     }).spread(function (data, dataHeaders) {
         if (app.conf.defaultHeaders) res.set(app.conf.defaultHeaders);
         if (source.defaultHeaders) res.set(source.defaultHeaders);
+        console.log(dataHeaders);
         if (dataHeaders) res.set(dataHeaders);
         if (app.conf.overrideHeaders) res.set(app.conf.overrideHeaders);
         if (source.headers) res.set(source.headers);
@@ -199,7 +201,6 @@ function init(opts) {
     metrics = app.metrics;
 
     var staticOpts = {};
-    staticOpts.index = false;
     staticOpts.setHeaders = function (res) {
         if (app.conf.cache) {
             res.header('Cache-Control', app.conf.cache);

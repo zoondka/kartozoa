@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   version: 0.0.1
   title: Kartozoa
-  description: Simple vector tile server based on Kartotherian
+  description: Simple Kartotherian Tile Server Remix
   contact:
     name: Lucas Leblow
     email: leblowl@gmail.com
@@ -49,86 +49,7 @@ paths:
               fooo: true
           response:
             status: 404
-  # from routes/v1.js
-  /{domain}/v1/siteinfo{/prop}:
-    get:
-      tags:
-        - Site info
-        - MW API call
-        - Example
-      description: Calls the MW API siteinfo action and returns the response
-      produces:
-        - application/json
-      x-amples:
-        - title: site info for default domain
-          request: {}
-          response:
-            status: 200
-            headers:
-              content-type: application/json
-        - title: site info for a non-existent domain
-          request:
-            params:
-              domain: my.fake.domain
-          response:
-            status: 504
-            headers:
-              content-type: application/json
-        - title: site info check for valid prop
-          request:
-            params:
-              prop: sitename
-          response:
-            status: 200
-            headers:
-              content-type: application/json
-            body:
-              sitename: Wikipedia
-        - title: site info check for invalid prop
-          request:
-            params:
-              prop: blaprop
-          response:
-            status: 404
-            headers:
-              content-type: application/json
-  /{domain}/v1/page/{title}:
-    get:
-      tags:
-        - Page content
-        - Example
-      description: Gets the HTML for the page with the given title
-      produces:
-        - text/html
-        - application/json
-      x-amples:
-        - title: get the Foobar page from en.wp.org
-          request:
-            params:
-              title: Foobar
-          response:
-            status: 200
-            headers:
-              content-type: text/html
-  /{domain}/v1/page/{title}/lead:
-    get:
-      tags:
-        - Page content
-        - Lead section
-        - Example
-      description: Gets the lead-section HTML for the page with the given title
-      produces:
-        - text/html
-        - application/json
-      x-amples:
-        - title: get the lead section for Barack Obama
-          request:
-            params:
-              title: Barack Obama
-          response:
-            status: 200
-            headers:
-              content-type: text/html
+ 
   # from routes/info.js
   /_info:
     get:
@@ -194,84 +115,90 @@ paths:
           request: {}
           response:
             status: 301
-  # from routes/ex.js
-  /ex/err/array:
+
+  # from routes/kartozoa.js
+  /{src}/{z}/{x}/{y}.{format}:
     get:
-      tags:
-        - Example
-        - Error
-        - Internal error
-      description: Generates an internal error due to a wrong array declaration
+      description: Returns a tile based on source, zoom, coordinates, and format. Possible values for the various parameters depend on the Kartotherian sources configuration (see https://github.com/kartotherian/kartotherian-core#sources)
+      produces:
+        - application/octet-stream
+        - application/json
+        - image/png
+        - image/jpeg
+        - image/svg+xml
+        - text/html
+    parameters:
+      - name: src
+        in: path
+        description: Tile source name
+        type: string
+      - name: z
+        in: path
+        description: Zoom level of the tile
+        type: integer
+      - name: x
+        in: path
+        description: X coordinate of the tile
+        type: integer
+      - name: 'y'
+        in: path
+        description: Y coordinate of the tile
+        type: integer
+      - name: format
+        in: path
+        description: File format of the tile
+        type: string
+  /{src}/{z}/{x}/{y}@{scale}x.{format}:
+    get:
+      description: Returns a tile based on source, zoom, coordinates, scale, and format. Possible values for the various parameters depend on the Kartotherian sources configuration (see https://github.com/kartotherian/kartotherian-core#sources)
+      produces:
+        - application/octet-stream
+        - application/json
+        - image/png
+        - image/jpeg
+        - image/svg+xml
+        - text/html
+    parameters:
+      - name: src
+        in: path
+        description: Tile source name
+        type: string
+      - name: z
+        in: path
+        description: Zoom level of the tile
+        type: integer
+      - name: x
+        in: path
+        description: X coordinate of the tile
+        type: integer
+      - name: 'y'
+        in: path
+        description: Y coordinate of the tile
+        type: integer
+      - name: scale
+        in: path
+        description: Scale for rendering larger images to high resolution screens
+        type: number
+      - name: format
+        in: path
+        description: File format of the tile
+        type: string
+  /{src}/{info}.json:
+    get:
+      description: Returns information on a given source
       produces:
         - application/json
-      x-amples:
-        - title: wrong array declaration example
-          request: {}
-          response:
-            status: 500
-            headers:
-              content-type: application/json
-  /ex/err/file:
+    parameters:
+      - name: src
+        in: path
+        description: Tile source name (see https://github.com/kartotherian/kartotherian-core#sources)
+        type: string
+      - name: info
+        in: path
+        description: Either 'pbfinfo' for a pbf source or 'info' for an image source
+        type: string
+  /preview:
     get:
-      tags:
-        - Example
-        - Error
-        - Internal error
-      description: Generates an internal error due to a non-existing file
+      description: Returns a preview slippy map of the server's tiles
       produces:
-        - application/json
-      x-amples:
-        - title: non-existing file example
-          request: {}
-          response:
-            status: 500
-            headers:
-              content-type: application/json
-  /ex/err/manual/error:
-    get:
-      tags:
-        - Example
-        - Error
-        - Internal error
-      description: Generates an internal error due to a user-thrown error
-      produces:
-        - application/json
-      x-amples:
-        - title: user error example
-          request: {}
-          response:
-            status: 500
-            headers:
-              content-type: application/json
-  /ex/err/manual/deny:
-    get:
-      tags:
-        - Example
-        - Error
-        - Access denied
-      description: Generates an access-denied error
-      produces:
-        - application/json
-      x-amples:
-        - title: access denied error example
-          request: {}
-          response:
-            status: 403
-            headers:
-              content-type: application/json
-  /ex/err/manual/auth:
-    get:
-      tags:
-        - Example
-        - Error
-        - Unauthorised access
-      description: Generates an unauthorised error
-      produces:
-        - application/json
-      x-amples:
-        - title: unauthorised error example
-          request: {}
-          response:
-            status: 401
-            headers:
-              content-type: application/json
+        - text/html
