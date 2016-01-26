@@ -1,39 +1,43 @@
 'use strict';
 
-var core = require('kartotherian-core');
 var util = require('util');
 var sUtil = require('../lib/util');
 var pathLib = require('path');
 var BBPromise = require('bluebird');
 var _ = require('underscore');
 var express = require('express');
+var core = require('kartotherian-core');
 
-var Err;
-var app, sources;
-var metrics;
+var Err = core.Err;;
+var app, sources, metrics;
 
-var infoHeaders = {};
 
 function reportError(errReporterFunc, err) {
+
     try {
         errReporterFunc(err);
     } catch (e2) {
         console.error('Unable to report: ' + core.errToStr(err) + '\n\nDue to: ' + core.errToStr(e2));
     }
+
 }
 
+
 function reportRequestError(err, res) {
+
     reportError(function (err) {
-        res
-            .status(400)
-            .header('Cache-Control', 'public, s-maxage=30, max-age=30')
-            .json(err.message || 'error/unknown');
+        res.status(400)
+           .header('Cache-Control', 'public, s-maxage=30, max-age=30')
+           .json(err.message || 'error/unknown');
         core.log('error', err);
         metrics.increment(err.metrics || 'err.unknown');
     }, err);
+
 }
 
+
 function filterJson(query, data) {
+
     if ('summary' in query) {
         data = _(data).reduce(function (memo, layer) {
             memo[layer.name] = {
@@ -59,7 +63,9 @@ function filterJson(query, data) {
         data = _.map(data, filter);
     }
     return data;
+
 }
+
 
 /**
  * Web server (express) route handler to get requested tile or info
@@ -117,7 +123,7 @@ function requestHandler(req, res, next) {
         }
         if (isInfoRequest) {
             return handler.getInfoAsync().then(function(info) {
-                return [info, infoHeaders];
+                return [info, {}];
             });
         }
 
@@ -182,10 +188,12 @@ function requestHandler(req, res, next) {
     }).catch(function(err) {
         return reportRequestError(err, res);
     }).catch(next);
+
 }
 
+
 function init(opts) {
-    Err = core.Err;
+
     app = opts.app;
     sources = opts.sources;
     metrics = app.metrics;
@@ -220,7 +228,9 @@ function init(opts) {
     app.use('/leaflet', express.static(pathLib.dirname(require.resolve('leaflet')), staticOpts));
 
     metrics.increment('init');
+
 };
+
 
 module.exports = function(app) {
 
@@ -243,9 +253,9 @@ module.exports = function(app) {
         return sources.init(app.conf.variables, app.conf.sources);
     }).then(function (sources) {
         return init({
-            core: core,
             app: app,
             sources: sources
         });
     }).return();
+
 };
