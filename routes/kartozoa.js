@@ -2,6 +2,7 @@
 
 var core = require('kartotherian-core');
 var util = require('util');
+var sUtil = require('../lib/util');
 var pathLib = require('path');
 var BBPromise = require('bluebird');
 var _ = require('underscore');
@@ -184,14 +185,13 @@ function requestHandler(req, res, next) {
 }
 
 function init(opts) {
-
-    core = opts.core;
     Err = core.Err;
     app = opts.app;
     sources = opts.sources;
     metrics = app.metrics;
 
     var staticOpts = {};
+    staticOpts.index = false;
     staticOpts.setHeaders = function (res) {
         if (app.conf.cache) {
             res.header('Cache-Control', app.conf.cache);
@@ -201,7 +201,7 @@ function init(opts) {
         }
     };
 
-    var router = express.Router();
+    var router = sUtil.router();
 
     // get tile
     router.get('/:src(' + core.Sources.sourceIdReStr + ')/:z(\\d+)/:x(\\d+)/:y(\\d+).:format([\\w]+)', requestHandler);
@@ -247,5 +247,5 @@ module.exports = function(app) {
             app: app,
             sources: sources
         });
-    });
+    }).return();
 };

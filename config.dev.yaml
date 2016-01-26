@@ -36,7 +36,7 @@ services:
       # the location of the spec, defaults to spec.yaml if not specified
       spec: ./spec.yaml
       # allow cross-domain requests to the API (default '*')
-      cors: 'maps.zoondka.com'
+      cors: '*'
       # to disable use:
       # cors: false
       # to restrict to a particular domain, use:
