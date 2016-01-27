@@ -29,8 +29,9 @@ paths:
     get:
       tags:
         - Root
-      description: The root service end-point
+      description: The root service end-point returns either an html rendering of the API spec or a json version with the spec=true query parameter
       produces:
+        - text/html
         - application/json
       x-amples:
         - title: root with no query params
