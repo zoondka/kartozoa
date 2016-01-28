@@ -1,5 +1,5 @@
 {
-  "name": "Kartozoa",
+  "name": "kartozoa",
   "version": "0.0.1",
   "description": "Simple vector tile server based on Kartotherian",
   "main": "./app.js",
@@ -41,7 +41,7 @@
     "js-yaml": "^3.5.2",
     "preq": "^0.4.8",
     "service-runner": "^0.3.8",
-
+ 
     "mapnik": "~3.4.0",
     "tilelive": "~5.12.0",
     "tilelive-bridge": "~2.2.3",

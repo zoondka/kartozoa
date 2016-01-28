@@ -33,7 +33,7 @@ map.on('zoomend', function () {
 var hash = new L.Hash(map);
 
 // Add a map layer
-L.tileLayer('/' + style + '/{z}/{x}/{y}' + scalex + '.png', {
+L.tileLayer(style + '/{z}/{x}/{y}' + scalex + '.png', {
     maxZoom: 18,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap contributors</a>',
     id: 'wikipedia-map-01'
