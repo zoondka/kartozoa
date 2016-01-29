@@ -1,7 +1,7 @@
 {
   "name": "kartozoa",
   "version": "0.0.1",
-  "description": "Simple vector tile server based on Kartotherian",
+  "description": "Simple Kartotherian Tile Server Remix",
   "main": "./app.js",
   "scripts": {
     "start": "service-runner",
@@ -27,6 +27,7 @@
   "bugs": {
     "url": "https://github.com/zoondka/kartozoa/issues"
   },
+  "homepage": "https://github.com/zoondka/kartozoa",
   "dependencies": {
     "bluebird": "^3.1.1",
     "body-parser": "^1.14.2",
