@@ -6,8 +6,6 @@
   "scripts": {
     "start": "service-runner",
     "test": "mocha",
-    "docker-start": "service-runner docker-start",
-    "docker-test": "service-runner docker-test",
     "coverage": "istanbul cover _mocha -- -R spec"
   },
   "repository": {
