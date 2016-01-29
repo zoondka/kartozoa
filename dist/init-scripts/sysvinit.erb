@@ -14,7 +14,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="<%= @service_name %> service"
 NAME=<%= @service_name %>
-SCRIPT_PATH=/srv/deployment/$NAME/deploy/src/server.js
+SCRIPT_PATH=/usr/local/lib/node_modules/$NAME/server.js
 DAEMON="/usr/bin/nodejs $SCRIPT_PATH"
 DAEMON_ARGS="-c /etc/$NAME/config.yaml"
 PIDFILE=/var/run/$NAME.pid
@@ -30,7 +30,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 # export some variables into the process' environment
 export PORT
 export INTERFACE
-export NODE_PATH=/srv/deployment/$NAME/deploy/node_modules
+export NODE_PATH=/usr/local/lib/node_modules/$NAME/node_modules
 export <%= @service_name.gsub(/[^a-z0-9_]/, '_').upcase %>_PORT=<%= @port %>
 
 
@@ -169,4 +169,3 @@ case "$1" in
 	exit 3
 	;;
 esac
-
